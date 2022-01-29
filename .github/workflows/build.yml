@@ -51,3 +51,16 @@ jobs:
         name: HelloWorld
         path: build/mac_x*/
         if-no-files-found: error
+
+  build-win:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      run: build-win.cmd "%programfiles(x86)%\Microsoft Visual Studio\2019\Enterprise" "build"
+    - name: Upload plugin
+      uses: actions/upload-artifact@v2
+      with:
+        name: HelloWorld
+        path: build/win_x*/
+        if-no-files-found: error
