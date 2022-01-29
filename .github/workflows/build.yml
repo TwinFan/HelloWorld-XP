@@ -23,7 +23,10 @@ jobs:
         pwd
         cmake ..
     - name: Build
-      run: make
+      run: |
+        cd build-lin
+        pwd
+        make
     - name: Upload plugin
       uses: actions/upload-artifact@v2
       with:
