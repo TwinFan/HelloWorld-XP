@@ -1,6 +1,6 @@
 # Hello-World-SDK-3
 
-[![Build all Platform](https://github.com/TwinFan/HelloWorld-XP/actions/workflows/build.yml/badge.svg)](https://github.com/TwinFan/HelloWorld-XP/actions/workflows/build.yml)
+[![Build all Platforms](https://github.com/TwinFan/HelloWorld-XP/actions/workflows/build.yml/badge.svg)](https://github.com/TwinFan/HelloWorld-XP/actions/workflows/build.yml)
 
 This is a "Hello World" example plugin for use with X-Plane and can serve as a basis for your own plugin development. Its code is originally taken from [X-Plane's developer site](https://developer.x-plane.com/code-sample/hello-world-sdk-3/).
 
