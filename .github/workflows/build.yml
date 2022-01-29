@@ -27,8 +27,11 @@ jobs:
         cd build-lin
         pwd
         make -n
+    - name: Show me what is there
+      run: find .
     - name: Upload plugin
       uses: actions/upload-artifact@v2
       with:
         name: HelloWorld-lin
         path: build-lin/lin_x64/
+        if-no-files-found: error
