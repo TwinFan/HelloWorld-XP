@@ -4,8 +4,7 @@
 
 This is a "Hello World" example plugin for use with X-Plane and can serve as a basis for your own plugin development. Its code is originally taken from [X-Plane's developer site](https://developer.x-plane.com/code-sample/hello-world-sdk-3/).
 
-Added are IDE projects for XCode and MS Visual Studio as well as a `CMakeList.txt` setup for use with Visual Studio and the provided Docker environment for cross platform build.
-
+Added are an IDE project for XCode as well as a `CMakeList.txt` setup for use with MS Visual Studio, the provided Docker environment for cross platform build, and GitHub Actions.
 
 ## Credits
 LiveTraffic is based on a number of other great libraries and APIs, most notably:
@@ -15,4 +14,5 @@ LiveTraffic is based on a number of other great libraries and APIs, most notably
 
 - GitHub Actions build setup is provided in `actions/workflows/build.yml`
 - MacOS: Just open `HelloWorld.xcodeproj` in Xcode.
-- For Cross Compile for Linux, Mac, and Windows see `docker/README.md`.
+- MS Visual Studio: Do "File > Open > Folder..." on the project's main folder. VS will initialize based on `CMakeList.txt` and `CMakeSettings.json`.
+- For Cross Compile in a Docker environment for Linux, Mac, and Windows see `docker/README.md`.

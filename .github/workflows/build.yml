@@ -1,4 +1,4 @@
-name: Build all Platform
+name: Build all Platforms
 
 on:
   push:
