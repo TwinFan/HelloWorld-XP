@@ -26,9 +26,9 @@ jobs:
       run: |
         cd build-lin
         pwd
-        make
+        make -n
     - name: Upload plugin
       uses: actions/upload-artifact@v2
       with:
         name: HelloWorld-lin
-        path: build-lin/lin_x64/HelloWorld-xpl
+        path: build-lin/lin_x64/
