@@ -1,0 +1,26 @@
+name: Build all Platform
+
+on:
+  push:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-lin:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Prepare
+      run: |
+        mkdir build-lin
+        cd build-lin
+        pwd
+    - name: CMake
+      run: cmake -G Ninja 
+    - name: Build
+      run: ninja
+    - name: Upload plugin
+      uses: actions/upload-artifact@v2
+      with:
+        name: HelloWorld-lin
+        path: build-lin/lin_x64/HelloWorld-xpl
