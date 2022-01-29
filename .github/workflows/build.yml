@@ -27,14 +27,10 @@ jobs:
         cd build-lin
         pwd
         ninja
-    - name: Show me what is there
-      run: ls -l `find .`
     - name: Upload plugin
       uses: actions/upload-artifact@v2
       with:
-        name: HelloWorld-lin
+        name: HelloWorld
         path: |
-          build-lin/CMakeFiles/HelloWorld.dir/
-          build-lin/CMakeFiles/*
           build-lin/lin_x64/
         if-no-files-found: error
