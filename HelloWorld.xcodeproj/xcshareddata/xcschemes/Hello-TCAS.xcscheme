@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D607B19809A556E400699BC3"
-               BuildableName = "Hello-World-SDK-3.xpl"
+               BuildableName = "HelloWorld.xpl"
                BlueprintName = "Hello-TCAS"
                ReferencedContainer = "container:HelloWorld.xcodeproj">
             </BuildableReference>
@@ -51,7 +51,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D607B19809A556E400699BC3"
-            BuildableName = "Hello-World-SDK-3.xpl"
+            BuildableName = "HelloWorld.xpl"
             BlueprintName = "Hello-TCAS"
             ReferencedContainer = "container:HelloWorld.xcodeproj">
          </BuildableReference>
