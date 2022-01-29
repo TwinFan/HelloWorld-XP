@@ -9,6 +9,7 @@ jobs:
   #####################################
   # Linux with GCC
   build-lin:
+    if: ${{ false }}  # disable for now
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -37,8 +38,35 @@ jobs:
         if-no-files-found: error
 
   #####################################
-  # MacOS with XCode
+  # MacOS with CMake/clang
   build-mac:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Prepare
+      run: |
+        mkdir build-mac
+    - name: CMake
+      run: |
+        cd build-mac
+        pwd
+        cmake -G Ninja ..
+    - name: Build
+      run: |
+        cd build-mac
+        pwd
+        ninja
+    - name: Upload plugin
+      uses: actions/upload-artifact@v2
+      with:
+        name: HelloWorld
+        path: build-mac/mac_*/
+        if-no-files-found: error
+
+  #####################################
+  # MacOS with XCode
+  build-mac-xcode:
+    if: ${{ false }}  # disable for now
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
@@ -59,6 +87,7 @@ jobs:
   #####################################
   # Windows with MS Visual Studio
   build-win:
+    if: ${{ false }}  # disable for now
     runs-on: windows-2022
     steps:
     - uses: actions/checkout@v2
