@@ -43,6 +43,9 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Install required libs
+      run: |
+        brew install ninja
     - name: Prepare
       run: |
         mkdir build-mac
