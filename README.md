@@ -14,5 +14,5 @@ LiveTraffic is based on a number of other great libraries and APIs, most notably
 ## Build
 
 - GitHub Actions build setup is provided in `actions/workflows/build.yml`
-- MacOS: Just open `Hello-World-SDK-3.xcodeproj` in Xcode.
+- MacOS: Just open `HelloWorld.xcodeproj` in Xcode.
 - For Cross Compile for Linux, Mac, and Windows see `docker/README.md`.

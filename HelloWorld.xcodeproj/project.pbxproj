@@ -34,7 +34,7 @@
 		2571279A27A56B960098F594 /* XPLM.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XPLM.framework; path = lib/SDK/Libraries/Mac/XPLM.framework; sourceTree = "<group>"; };
 		2571279E27A56C180098F594 /* XPWidgets.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XPWidgets.framework; path = lib/SDK/Libraries/Mac/XPWidgets.framework; sourceTree = "<group>"; };
 		257127A227A56C380098F594 /* Hello-World-SDK-3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "Hello-World-SDK-3.cpp"; sourceTree = "<group>"; };
-		D607B19909A556E400699BC3 /* Hello-World-SDK-3.xpl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "Hello-World-SDK-3.xpl"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D607B19909A556E400699BC3 /* HelloWorld.xpl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = HelloWorld.xpl; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6A7BDC016A1DEC000D1426A /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -72,7 +72,7 @@
 		D607B19A09A556E400699BC3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D607B19909A556E400699BC3 /* Hello-World-SDK-3.xpl */,
+				D607B19909A556E400699BC3 /* HelloWorld.xpl */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -104,7 +104,7 @@
 			);
 			name = "Hello-TCAS";
 			productName = StarterPlugin;
-			productReference = D607B19909A556E400699BC3 /* Hello-World-SDK-3.xpl */;
+			productReference = D607B19909A556E400699BC3 /* HelloWorld.xpl */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 /* End PBXNativeTarget section */
@@ -115,7 +115,7 @@
 			attributes = {
 				LastUpgradeCheck = 1320;
 			};
-			buildConfigurationList = D607B16209A5563100699BC3 /* Build configuration list for PBXProject "Hello-World-SDK-3" */;
+			buildConfigurationList = D607B16209A5563100699BC3 /* Build configuration list for PBXProject "HelloWorld" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -322,6 +322,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/lib/SDK/Libraries/Mac/XPLM.framework",
 				);
+				PRODUCT_NAME = HelloWorld;
 				VALID_ARCHS = x86_64;
 				XPLANE11_ROOT = "/Users/birger/Applications/X-Plane/Release";
 			};
@@ -340,6 +341,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/lib/SDK/Libraries/Mac/XPLM.framework",
 				);
+				PRODUCT_NAME = HelloWorld;
 				VALID_ARCHS = x86_64;
 				XPLANE11_ROOT = "/Users/birger/Applications/X-Plane/Release";
 			};
@@ -348,7 +350,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D607B16209A5563100699BC3 /* Build configuration list for PBXProject "Hello-World-SDK-3" */ = {
+		D607B16209A5563100699BC3 /* Build configuration list for PBXProject "HelloWorld" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D607B16309A5563100699BC3 /* Debug */,
