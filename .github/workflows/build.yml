@@ -32,7 +32,7 @@ jobs:
       with:
         name: HelloWorld
         path: |
-          build-lin/lin_x64/
+          build-lin/lin_x64
         if-no-files-found: error
 
   build-mac:
@@ -45,7 +45,7 @@ jobs:
     - name: Organise plugin for upload
       run: |
         mkdir build/mac_x64
-        mv build/Release/HelloWorld.xpl build/mac_x64/
+        mv build/Release/HelloWorld.xpl build/mac_x64
     - name: Upload plugin
       uses: actions/upload-artifact@v2
       with:
