@@ -6,7 +6,10 @@ on:
     branches: [ main ]
 
 jobs:
+  #####################################
+  # Linux with GCC
   build-lin:
+    if: ${{ false }}  # disable for now
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -34,7 +37,10 @@ jobs:
         path: build-lin/lin_*/
         if-no-files-found: error
 
+  #####################################
+  # MacOS with XCode
   build-mac:
+    if: ${{ false }}  # disable for now
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
@@ -52,6 +58,8 @@ jobs:
         path: build/mac_x*/
         if-no-files-found: error
 
+  #####################################
+  # Windows with MS Visual Studio
   build-win:
     runs-on: windows-latest
     steps:
