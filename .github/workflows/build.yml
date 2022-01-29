@@ -13,12 +13,13 @@ jobs:
     - name: Prepare
       run: |
         mkdir build-lin
+    - name: CMake
+      run: |
         cd build-lin
         pwd
-    - name: CMake
-      run: cmake -G Ninja 
+        cmake ..
     - name: Build
-      run: ninja
+      run: make
     - name: Upload plugin
       uses: actions/upload-artifact@v2
       with:
