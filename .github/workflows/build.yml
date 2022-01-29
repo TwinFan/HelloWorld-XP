@@ -74,7 +74,7 @@ jobs:
         export MACOS_IDENTITY=`security find-identity -v | egrep -o '[0-9A-F]{40}'`
         echo $MACOS_IDENTITY
         security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k NotSoSecretAPwd build.keychain
-        codesign --force -s $MACOS_IDENTITY build/mac_x64/HelloWorld.xpl -v
+        codesign --force -s $MACOS_IDENTITY build-mac/mac_x64/HelloWorld.xpl -v
     - name: Upload plugin
       uses: actions/upload-artifact@v2
       with:
