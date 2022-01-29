@@ -80,6 +80,22 @@ jobs:
       run: |
         mkdir build/mac_x64
         mv build/Release/HelloWorld.xpl build/mac_x64
+    - name: Codesign executable
+      env: 
+        MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+        MACOS_CERT_PWD: ${{ secrets.MACOS_CERT_PWD }}
+      if: env.MACOS_CERTIFICATE != null     # Only codesign if certificate defined
+      run: |
+        echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
+        security create-keychain -p NotSoSecretAPwd build.keychain
+        security default-keychain -s build.keychain
+        security unlock-keychain -p NotSoSecretAPwd build.keychain
+        security import certificate.p12 -k build.keychain -P $MACOS_CERT_PWD -T /usr/bin/codesign
+        security find-identity -v
+        export MACOS_IDENTITY=`security find-identity -v | egrep -o '[0-9A-F]{40}'`
+        echo $MACOS_IDENTITY
+        security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k NotSoSecretAPwd build.keychain
+        codesign --force -s $MACOS_IDENTITY build/mac_x64/HelloWorld.xpl -v
     - name: Upload plugin
       uses: actions/upload-artifact@v2
       with:
