@@ -10,6 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Install required libs
+      run: |
+        sudo apt-get update
+        sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev
     - name: Prepare
       run: |
         mkdir build-lin
