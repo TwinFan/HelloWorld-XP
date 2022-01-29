@@ -21,17 +21,20 @@ jobs:
       run: |
         cd build-lin
         pwd
-        cmake ..
+        cmake -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ..
     - name: Build
       run: |
         cd build-lin
         pwd
         make -n
     - name: Show me what is there
-      run: find .
+      run: ls -l `find .`
     - name: Upload plugin
       uses: actions/upload-artifact@v2
       with:
         name: HelloWorld-lin
-        path: build-lin/lin_x64/
+        path: |
+          build-lin/CMakeFiles/HelloWorld.dir/
+          build-lin/CMakeFiles/*
+          build-lin/lin_x64/
         if-no-files-found: error
