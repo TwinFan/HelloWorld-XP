@@ -42,7 +42,7 @@ add_compile_definitions(APL=$<BOOL:${APPLE}> IBM=$<BOOL:${WIN32}> LIN=$<AND:$<BO
 if (MSVC)
     # Deprecation warning: once is enough
     add_compile_options(/wo4996)
-    include_directories("${CMAKE_SOURCE_DIR}/OpenGL")
+    include_directories(SYSTEM "${CMAKE_SOURCE_DIR}/OpenGL")
 else()
     add_compile_options(-Wall -Wshadow -Wfloat-equal -Wextra)
     if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9.0 AND NOT APPLE)
