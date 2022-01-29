@@ -57,7 +57,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build
-      run: CMD.EXE /C build-win.cmd "%programfiles(x86)%\Microsoft Visual Studio\2019\Enterprise" "build"
+      run: CMD.EXE /C docker/build-win.cmd "%programfiles(x86)%\Microsoft Visual Studio\2019\Enterprise" "build"
     - name: Upload plugin
       uses: actions/upload-artifact@v2
       with:

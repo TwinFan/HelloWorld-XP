@@ -158,7 +158,7 @@ elseif (APPLE)
     )
 
     # Restrict set of symbols exported from the plugin to the ones required by XPLM:
-    target_link_libraries(HelloWorld "-exported_symbols_list ${CMAKE_SOURCE_DIR}/HelloWorld.sym_mac")
+    target_link_libraries(HelloWorld "-exported_symbols_list ${CMAKE_SOURCE_DIR}/src/HelloWorld.sym_mac")
 elseif (UNIX)
     # Link library for dynamic loading of shared objects on UNIX systems.
     find_library(DL_LIBRARY dl REQUIRED)
@@ -169,7 +169,7 @@ elseif (UNIX)
     target_link_libraries(HelloWorld ${DL_LIBRARY} Threads::Threads)
     # Specify additional runtime search paths for dynamically-linked libraries.
     # Restrict set of symbols exported from the plugin to the ones required by XPLM:
-    target_link_libraries(HelloWorld -Wl,--version-script -Wl,${CMAKE_SOURCE_DIR}/HelloWorld.sym)
+    target_link_libraries(HelloWorld -Wl,--version-script -Wl,${CMAKE_SOURCE_DIR}/src/HelloWorld.sym)
 endif ()
 
 # Target directory and file name
