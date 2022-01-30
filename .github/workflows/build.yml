@@ -13,7 +13,7 @@ jobs:
   build-lin:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/build-lin
+    - uses: .github/actions/build-lin
       with:
         pluginName: HelloWorld
 
