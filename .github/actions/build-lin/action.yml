@@ -15,23 +15,28 @@ runs:
   using: "composite"
   steps:
   - name: Install required libs   # We want Ninja and OpenGL libs
+    shell: bash
     run: |
       sudo apt-get update -y
       sudo apt-get install -y ninja-build libglu1-mesa-dev freeglut3-dev mesa-common-dev
   - name: Prepare
+    shell: bash
     run: |
       mkdir build-lin
   - name: CMake
+    shell: bash
     run: |
       cd build-lin
       pwd
       cmake -G Ninja ..
   - name: Build
+    shell: bash
     run: |
       cd build-lin
       pwd
       ninja
   - name: Prepare Deployment Structure      # moves the plugin, like "build-lin/lin_x64/MyPlugin.xpl", to a deployment structure like "deploy/MyPlugin/lin_x64/MyPlugin.xpl"
+    shell: bash
     run: |
       mkdir -p "deploy/${{ inputs.pluginName }}/${{ inputs.archFolder }}"
       mv "build-lin/${{ inputs.archFolder }}/${{ inputs.pluginName }}.xpl" "deploy/${{ inputs.pluginName }}/${{ inputs.archFolder }}"
