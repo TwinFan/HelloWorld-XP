@@ -1,0 +1,44 @@
+name: Build Linux / CMake
+description: Build on Linux based on a CMake setup
+author: TwinFan
+
+inputs:                       
+  pluginName:
+    description: "Plugin's name, used both as top-level folder name and as file name as required by X-Plane"
+    required: true
+  archFolder:
+    description: "Subfolder in which the executable is placed, is based on architecture like 'lin_x64'"
+    required: true
+    default: lin_x64
+
+runs:
+  using: "composite"
+  steps:
+  - uses: actions/checkout@v2
+  - name: Install required libs   # We want Ninja and OpenGL libs
+    run: |
+      sudo apt-get update -y
+      sudo apt-get install -y ninja-build libglu1-mesa-dev freeglut3-dev mesa-common-dev
+  - name: Prepare
+    run: |
+      mkdir build-lin
+  - name: CMake
+    run: |
+      cd build-lin
+      pwd
+      cmake -G Ninja ..
+  - name: Build
+    run: |
+      cd build-lin
+      pwd
+      ninja
+  - name: Prepare Deployment Structure      # moves the plugin, like "build-lin/lin_x64/MyPlugin.xpl", to a deployment structure like "deploy/MyPlugin/lin_x64/MyPlugin.xpl"
+    run: |
+      mkdir -p "deploy/${{ inputs.pluginName }}/${{ inputs.archFolder }}"
+      mv "build-lin/${{ inputs.archFolder }}/${{ inputs.pluginName }}.xpl" "deploy/${{ inputs.pluginName }}/${{ inputs.archFolder }}"
+  - name: Upload plugin
+    uses: actions/upload-artifact@v2
+    with:
+      name: ${{ inputs.pluginName }}
+      path: deploy/*                        # this way the top folder in the artifacts is "MyPlugin"
+      if-no-files-found: error

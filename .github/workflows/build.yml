@@ -2,8 +2,10 @@ name: Build all Platforms
 
 on:
   push:
+    branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:        # Can also be called manually for whatever reason
 
 jobs:
   #####################################
@@ -11,30 +13,9 @@ jobs:
   build-lin:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Install required libs
-      run: |
-        sudo apt-get update -y
-        sudo apt-get install -y ninja-build libglu1-mesa-dev freeglut3-dev mesa-common-dev
-    - name: Prepare
-      run: |
-        mkdir build-lin
-    - name: CMake
-      run: |
-        cd build-lin
-        pwd
-        cmake -G Ninja ..
-    - name: Build
-      run: |
-        cd build-lin
-        pwd
-        ninja
-    - name: Upload plugin
-      uses: actions/upload-artifact@v2
+    - uses: actions/build-lin
       with:
-        name: HelloWorld
-        path: build-lin/lin_*/
-        if-no-files-found: error
+        pluginName: HelloWorld
 
   #####################################
   # MacOS with CMake/clang and sign/notarize in self-written script
