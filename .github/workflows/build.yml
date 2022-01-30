@@ -13,7 +13,8 @@ jobs:
   build-lin:
     runs-on: ubuntu-latest
     steps:
-    - uses: .github/actions/build-lin/
+    - uses: actions/checkout@v2       # must checkout before we can use our own actions
+    - uses: ./.github/actions/build-lin
       with:
         pluginName: HelloWorld
 
