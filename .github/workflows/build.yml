@@ -15,75 +15,39 @@ jobs:
     steps:
     - uses: actions/checkout@v2       # must checkout before we can use our own actions
     - uses: ./.github/actions/build-lin
+      id: build
       with:
         pluginName: HelloWorld
+    - uses: ./.github/actions/upload-plugin
+      with:
+        pluginName: HelloWorld
+        archFolder: lin_x64
+        xplFileName: "${{ steps.build.outputs.xpl-file-name }}"
 
   #####################################
   # MacOS with CMake/clang and sign/notarize in self-written script
   build-mac:
     runs-on: macos-latest
-    if: ${{ false }}  # disable for now
     steps:
     - uses: actions/checkout@v2
-    - name: Install required libs
-      run: |
-        brew install ninja
-    - name: Prepare
-      run: |
-        mkdir build-mac
-    - name: CMake
-      run: |
-        cd build-mac
-        pwd
-        cmake -G Ninja ..
-    - name: Build
-      run: |
-        cd build-mac
-        pwd
-        ninja
+    - uses: ./.github/actions/build-mac
+      id: build
+      with:
+        pluginName: HelloWorld
     - name: Codesign and Notarization
       env: 
         MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
-      if: env.MACOS_CERTIFICATE != null     # Only codesign if certificate defined
+      if: ${{ false }}   # sign/notarize disabled
+#      if: env.MACOS_CERTIFICATE != null     # Only codesign if certificate defined
       run: |
         echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
         chmod a+x docker/sign-notarize
         ./docker/sign-notarize "build-mac/mac_x64/HelloWorld.xpl" "TwinFan.plugin.HelloWorld" certificate.p12 "${{ secrets.MACOS_CERT_PWD }}" "${{ secrets.NOTARIZATION_USERNAME }}" "${{ secrets.NOTARIZATION_PASSWORD }}"
-    - name: Upload plugin
-      uses: actions/upload-artifact@v2
+    - uses: ./.github/actions/upload-plugin
       with:
-        name: HelloWorld
-        path: build-mac/mac_*/
-        if-no-files-found: error
-
-  #####################################
-  # MacOS with XCode and sign notarize in GitHub actions
-  build-mac-xcode:
-    runs-on: macos-latest
-    if: ${{ false }}  # disable for now as not everybody has an XCode project as basis
-    steps:
-    - uses: actions/checkout@v2
-    - name: Build
-      run: |
-        xcodebuild -alltargets -quiet
-    - name: Organise plugin for upload
-      run: |
-        mkdir build/mac_x64
-        mv build/Release/HelloWorld.xpl build/mac_x64
-    - name: Codesign and Notarization
-      env: 
-        MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
-      if: env.MACOS_CERTIFICATE != null     # Only codesign if certificate defined
-      run: |
-        echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
-        chmod a+x docker/sign-notarize
-        ./docker/sign-notarize "build/mac_x64/HelloWorld.xpl" "TwinFan.plugin.HelloWorld" certificate.p12 "${{ secrets.MACOS_CERT_PWD }}" "${{ secrets.NOTARIZATION_USERNAME }}" "${{ secrets.NOTARIZATION_PASSWORD }}"
-    - name: Upload plugin
-      uses: actions/upload-artifact@v2
-      with:
-        name: HelloWorld
-        path: build/mac_x*/
-        if-no-files-found: error
+        pluginName: HelloWorld
+        archFolder: mac_x64
+        xplFileName: "${{ steps.build.outputs.xpl-file-name }}"
 
   #####################################
   # Windows with MS Visual Studio
