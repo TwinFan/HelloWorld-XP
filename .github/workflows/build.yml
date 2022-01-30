@@ -7,60 +7,75 @@ on:
     branches: [ main ]
   workflow_dispatch:        # Can also be called manually for whatever reason
 
+# Let's set all project specific definitions globally
+env:
+  PRJ_NAME:     HelloWorld            # The plugin's name, expected to be the .xpl file's name and used as the plugin folder name
+  PRJ_BUNDLEID: TwinFan.plugin.HelloWorld
+
 jobs:
   #####################################
   # Linux with GCC
   build-lin:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2       # must checkout before we can use our own actions
-    - uses: ./.github/actions/build-lin
+    - name: Checkout Code
+      uses: actions/checkout@v2       # must checkout before we can use our own actions
+    - name: Build
+      uses: ./.github/actions/build-lin
       id: build
       with:
-        pluginName: HelloWorld
-    - uses: ./.github/actions/upload-plugin
+        pluginName: ${{ env.PRJ_NAME }}
+    - name: Upload Artifact
+      uses: ./.github/actions/upload-plugin
       with:
-        pluginName: HelloWorld
-        archFolder: lin_x64
-        xplFileName: "${{ steps.build.outputs.xpl-file-name }}"
+        pluginName:   ${{ env.PRJ_NAME }}
+        archFolder:   lin_x64
+        xplFileName:  "${{ steps.build.outputs.xpl-file-name }}"
 
   #####################################
   # MacOS with CMake/clang and sign/notarize in self-written script
   build-mac:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: ./.github/actions/build-mac
+    - name: Checkout Code
+      uses: actions/checkout@v2       # must checkout before we can use our own actions
+    - name: Build
+      uses: ./.github/actions/build-mac
       id: build
       with:
-        pluginName: HelloWorld
+        pluginName: ${{ env.PRJ_NAME }}
     - name: Codesign and Notarization
-      env: 
-        MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
-      if: ${{ false }}   # sign/notarize disabled
-#      if: env.MACOS_CERTIFICATE != null     # Only codesign if certificate defined
-      run: |
-        echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
-        chmod a+x docker/sign-notarize
-        ./docker/sign-notarize "build-mac/mac_x64/HelloWorld.xpl" "TwinFan.plugin.HelloWorld" certificate.p12 "${{ secrets.MACOS_CERT_PWD }}" "${{ secrets.NOTARIZATION_USERNAME }}" "${{ secrets.NOTARIZATION_PASSWORD }}"
-    - uses: ./.github/actions/upload-plugin
+      if: ${{ secrets.MACOS_CERTIFICATE }} != null     # Only codesign if certificate defined
+      uses: ./.github/actions/sign-notarize
       with:
-        pluginName: HelloWorld
-        archFolder: mac_x64
-        xplFileName: "${{ steps.build.outputs.xpl-file-name }}"
+        bundleId:       ${{ env.PRJ_BUNDLEID }}
+        xplFileName:    ${{ steps.build.outputs.xpl-file-name }}
+        certificate:    ${{ secrets.MACOS_CERTIFICATE }}
+        certPwd:        ${{ secrets.MACOS_CERT_PWD }}
+        notarizeUser:   ${{ secrets.NOTARIZATION_USERNAME }}
+        notarizeAppPwd: ${{ secrets.NOTARIZATION_PASSWORD }}
+    - name: Upload Artifact
+      uses: ./.github/actions/upload-plugin
+      with:
+        pluginName:   ${{ env.PRJ_NAME }}
+        archFolder:   mac_x64
+        xplFileName:  ${{ steps.build.outputs.xpl-file-name }}
 
   #####################################
   # Windows with MS Visual Studio
   build-win:
     runs-on: windows-2022
-    if: ${{ false }}  # disable for now
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout Code
+      uses: actions/checkout@v2       # must checkout before we can use our own actions
     - name: Build
-      run: CMD.EXE /C 'docker\build-win.cmd' "C:\Program Files\Microsoft Visual Studio\2022\Enterprise" 'build'
-    - name: Upload plugin
-      uses: actions/upload-artifact@v2
+      uses: ./.github/actions/build-win
+      id: build
       with:
-        name: HelloWorld
-        path: build/win_x*/
-        if-no-files-found: error
+        pluginName: ${{ env.PRJ_NAME }}
+    - name: Upload Artifact
+      uses: ./.github/actions/upload-plugin
+      with:
+        pluginName:   ${{ env.PRJ_NAME }}
+        archFolder:   win_x64
+        xplFileName:  "${{ steps.build.outputs.xpl-file-name }}"
