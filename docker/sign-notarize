@@ -27,13 +27,13 @@ check_notarization() {
     local STATUS="in progress"
     while [ "$STATUS" == "in progress" ]
     do
-        echo "Wait for results..."
+        echo "Wait 30s for results..."
         sleep 30
         STATUS=`xcrun altool --notarization-info "$REQUID" -u "$USERNAME" -p "$USERPWD" | egrep -o '(in progress|success|invalid)'`
     done
 
     case $STATUS in
-        success)    echo "*** SUCCESS ***"
+        success)    echo ">>> SUCCESS <<<"
                     return 0
                     ;;
         invalid)    echo "%%% INVALID %%%"
@@ -104,8 +104,6 @@ check_notarization "$REQUID" "$NOTAR_USER" "$NOTAR_PWD"
 
 # Note: No stapling possible to .xpl files
 
-# Remove created keychain
-security delete-keychain build.keychain
-
 echo .
-echo "*** SUCCESS ***"
+echo "*** SIGNED and NOTARIZED ***"
+exit 0

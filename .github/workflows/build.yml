@@ -9,7 +9,6 @@ jobs:
   #####################################
   # Linux with GCC
   build-lin:
-    if: ${{ false }}  # disable for now
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -87,28 +86,14 @@ jobs:
       run: |
         mkdir build/mac_x64
         mv build/Release/HelloWorld.xpl build/mac_x64
-    - name: Codesign executable
+    - name: Codesign and Notarization
       env: 
         MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
-        MACOS_CERT_PWD: ${{ secrets.MACOS_CERT_PWD }}
       if: env.MACOS_CERTIFICATE != null     # Only codesign if certificate defined
       run: |
         echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
-        security create-keychain -p NotSoSecretAPwd build.keychain
-        security default-keychain -s build.keychain
-        security unlock-keychain -p NotSoSecretAPwd build.keychain
-        security import certificate.p12 -k build.keychain -P $MACOS_CERT_PWD -T /usr/bin/codesign
-        security find-identity -v
-        export MACOS_IDENTITY=`security find-identity -v | egrep -o '[0-9A-F]{40}'`
-        echo $MACOS_IDENTITY
-        security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k NotSoSecretAPwd build.keychain
-        codesign --force -s $MACOS_IDENTITY build/mac_x64/HelloWorld.xpl -v
-    - name: "Notarize Release Build"
-      uses: devbotsxyz/xcode-notarize@v1
-      with:
-        product-path: "build/mac_x64/HelloWorld.xpl"
-        appstore-connect-username: ${{ secrets.NOTARIZATION_USERNAME }}
-        appstore-connect-password: ${{ secrets.NOTARIZATION_PASSWORD }}
+        chmod a+x docker/sign-notarize
+        ./docker/sign-notarize "build/mac_x64/HelloWorld.xpl" "TwinFan.plugin.HelloWorld" certificate.p12 "${{ secrets.MACOS_CERT_PWD }}" "${{ secrets.NOTARIZATION_USERNAME }}" "${{ secrets.NOTARIZATION_PASSWORD }}"
     - name: Upload plugin
       uses: actions/upload-artifact@v2
       with:
@@ -119,7 +104,6 @@ jobs:
   #####################################
   # Windows with MS Visual Studio
   build-win:
-    if: ${{ false }}  # disable for now
     runs-on: windows-2022
     steps:
     - uses: actions/checkout@v2
