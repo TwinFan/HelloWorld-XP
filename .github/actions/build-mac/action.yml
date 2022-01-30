@@ -18,8 +18,6 @@ outputs:
 
 runs:
   using: "composite"
-  env:
-    TARGET_XPL: build-mac/${{ inputs.archFolder }}/${{ inputs.pluginName }}.xpl
   steps:
     - name: Install required libs
       shell: bash
@@ -43,6 +41,8 @@ runs:
         ninja
     - name: Test for Target
       shell: bash
+      env:
+        TARGET_XPL: build-mac/${{ inputs.archFolder }}/${{ inputs.pluginName }}.xpl
       run: |
         if [[ ! -f "$TARGET_XPL" ]]; then
           echo Expected target build not found: "$TARGET_XPL"
@@ -51,4 +51,6 @@ runs:
     - name: Return Value
       id: return
       shell: bash
+      env:
+        TARGET_XPL: build-mac/${{ inputs.archFolder }}/${{ inputs.pluginName }}.xpl
       run: echo "::set-output name=xpl-file-name::$(echo $TARGET_XPL)"
