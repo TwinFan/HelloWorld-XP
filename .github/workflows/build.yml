@@ -77,6 +77,7 @@ jobs:
   # MacOS with XCode and sign notarize in GitHub actions
   build-mac-xcode:
     runs-on: macos-latest
+    if: ${{ false }}  # disable for now as not everybody has an XCode project as basis
     steps:
     - uses: actions/checkout@v2
     - name: Build
