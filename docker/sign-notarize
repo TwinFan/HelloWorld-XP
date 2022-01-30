@@ -71,6 +71,7 @@ echo .
 # Create a temporary keychain and import the given certificate
 security create-keychain -p NotSoSecretAPwd build.keychain
 trap cleanup EXIT           # Make sure the keychain gets removed in case of failure exit
+security default-keychain -s build.keychain
 security unlock-keychain -p NotSoSecretAPwd build.keychain
 security import "$SIGN_ID_FILE" -P "$SIGN_ID_PWD" -k build.keychain -T /usr/bin/codesign
 # Allow some tools to use the keychain

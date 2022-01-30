@@ -38,7 +38,7 @@ jobs:
         if-no-files-found: error
 
   #####################################
-  # MacOS with CMake/clang
+  # MacOS with CMake/clang and sign/notarize in self-written script
   build-mac:
     runs-on: macos-latest
     steps:
@@ -75,7 +75,7 @@ jobs:
         if-no-files-found: error
 
   #####################################
-  # MacOS with XCode
+  # MacOS with XCode and sign notarize in GitHub actions
   build-mac-xcode:
     runs-on: macos-latest
     steps:
@@ -103,6 +103,12 @@ jobs:
         echo $MACOS_IDENTITY
         security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k NotSoSecretAPwd build.keychain
         codesign --force -s $MACOS_IDENTITY build/mac_x64/HelloWorld.xpl -v
+    - name: "Notarize Release Build"
+      uses: devbotsxyz/xcode-notarize@v1
+      with:
+        product-path: "build/mac_x64/HelloWorld.xpl"
+        appstore-connect-username: ${{ secrets.NOTARIZATION_USERNAME }}
+        appstore-connect-password: ${{ secrets.NOTARIZATION_PASSWORD }}
     - name: Upload plugin
       uses: actions/upload-artifact@v2
       with:
