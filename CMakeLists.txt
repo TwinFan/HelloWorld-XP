@@ -1,6 +1,22 @@
 # HelloWorld - Set up to be used in the provided docker environment to build lin, mac, and win
 
 cmake_minimum_required(VERSION 3.16)
+
+# Mac: Need to tell early on that we want a cross platform build
+if(DEFINED ENV{platform})
+    message ("-- Platform is $ENV{platform}")
+    if($ENV{platform} STREQUAL "mac-x86")
+        message ("   Building cross-platform for mac/x86_64")
+        set(CMAKE_OSX_ARCHITECTURES "x86_64" CACHE STRING "Archs to build")
+    elseif($ENV{platform} STREQUAL "mac-arm")
+        message ("   Building cross-platform for mac/arm64")
+        set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "Archs to build")
+    endif()
+else()
+    # No 'platform' defined could mean running from command line, assume we build universal image in one go via XCode
+    set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Archs to build")
+endif()
+
 project(HelloWorld
         VERSION 1.00
         DESCRIPTION "Hello World X-Plane plugin")
@@ -16,8 +32,9 @@ if (WIN32)
         set(ENV{platform} "win")
     endif()
 elseif(APPLE)
-    add_compile_options(-mmacosx-version-min=10.11)
-    add_link_options(-mmacosx-version-min=10.11)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0)
+    add_compile_options(-mmacosx-version-min=11.0)
+    add_link_options(-mmacosx-version-min=11.0)
 endif()
 
 ################################################################################
