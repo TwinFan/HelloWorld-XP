@@ -36,6 +36,21 @@ cd docker
 make
 ```
 
+### Using CMake
+
+Given a proper local setup with a suitable compile, CMake, and Ninja installed,
+you can just locally build the sources from the `CMakeList.txt` file,
+e.g. like this:
+
+```
+mkdir build
+cd build
+cmake -G Ninja ..
+ninja
+```
+
+This is precicely how the Mac and Linux builds are done in Github Actions.
+
 ### GitHub Actions
 
 The GitHub workflow `.github/workflows/build.yml` builds the plugin in GitHubs CD/CI environment.

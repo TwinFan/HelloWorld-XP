@@ -8,9 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2571279B27A56B960098F594 /* XPLM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2571279A27A56B960098F594 /* XPLM.framework */; };
-		2571279C27A56B960098F594 /* XPLM.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2571279A27A56B960098F594 /* XPLM.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2571279F27A56C180098F594 /* XPWidgets.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2571279E27A56C180098F594 /* XPWidgets.framework */; };
-		257127A027A56C180098F594 /* XPWidgets.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2571279E27A56C180098F594 /* XPWidgets.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		257127A327A56C380098F594 /* Hello-World-SDK-3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 257127A227A56C380098F594 /* Hello-World-SDK-3.cpp */; };
 		D6A7BDC116A1DEC000D1426A /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6A7BDC016A1DEC000D1426A /* CoreFoundation.framework */; };
 /* End PBXBuildFile section */
@@ -22,8 +20,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				257127A027A56C180098F594 /* XPWidgets.framework in Embed Frameworks */,
-				2571279C27A56B960098F594 /* XPLM.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -113,7 +109,7 @@
 		D607B16109A5563100699BC3 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1320;
+				LastUpgradeCheck = 1420;
 			};
 			buildConfigurationList = D607B16209A5563100699BC3 /* Build configuration list for PBXProject "HelloWorld" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -169,7 +165,9 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = "$(XPLANE11_ROOT)/Resources/plugins/$(PROJECT)";
 				DYLIB_COMPATIBILITY_VERSION = "";
 				DYLIB_CURRENT_VERSION = "";
@@ -224,7 +222,7 @@
 					"-Wl,_XPluginStop",
 				);
 				PRODUCT_NAME = "${PROJECT}";
-				SDKROOT = macosx;
+				XPLANE11_ROOT = "/Users/birger/Applications/X-Plane/12";
 				XPSDK_ROOT = lib/SDK;
 			};
 			name = Debug;
@@ -252,6 +250,8 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = "$(XPLANE11_ROOT)/Resources/plugins/$(PROJECT)";
 				DYLIB_COMPATIBILITY_VERSION = "";
 				DYLIB_CURRENT_VERSION = "";
@@ -304,7 +304,7 @@
 					"-Wl,_XPluginStop",
 				);
 				PRODUCT_NAME = "${PROJECT}";
-				SDKROOT = macosx;
+				XPLANE11_ROOT = "/Users/birger/Applications/X-Plane/12";
 				XPSDK_ROOT = lib/SDK;
 			};
 			name = Release;
@@ -314,6 +314,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				DEAD_CODE_STRIPPING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/lib/SDK/Libraries/Mac",
@@ -322,9 +323,8 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/lib/SDK/Libraries/Mac/XPLM.framework",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				PRODUCT_NAME = HelloWorld;
-				VALID_ARCHS = x86_64;
-				XPLANE11_ROOT = "/Users/birger/Applications/X-Plane/Release";
 			};
 			name = Debug;
 		};
@@ -333,6 +333,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				DEAD_CODE_STRIPPING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/lib/SDK/Libraries/Mac",
@@ -341,9 +342,8 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/lib/SDK/Libraries/Mac/XPLM.framework",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				PRODUCT_NAME = HelloWorld;
-				VALID_ARCHS = x86_64;
-				XPLANE11_ROOT = "/Users/birger/Applications/X-Plane/Release";
 			};
 			name = Release;
 		};

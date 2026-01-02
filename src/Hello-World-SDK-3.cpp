@@ -8,17 +8,12 @@
 #include "XPLMPlanes.h"
 #include "XPLMDataAccess.h"
 #include "XPWidgets.h"
-#include "XPStandardWidgets.h"
+#include "XPLMScenery.h"
+#include "XPLMUtilities.h"
+#include "XPLMDataAccess.h"
 #include <cstring>
 #include <string>
-#include <chrono>
-#include <thread>
-#if IBM
-	#include <windows.h>
-#endif
-
-// OpenGL is system-dependent
-#include "OpenGL/SystemGL.h"
+#include <math.h>
 
 #ifndef XPLM300
 	#error This is made to be compiled against the XPLM300 SDK
@@ -26,9 +21,6 @@
 
 // An opaque handle to the window we will create
 static XPLMWindowID	g_window;
-constexpr size_t NUM_BTN = 4;
-static XPWidgetID g_btn[NUM_BTN] = {nullptr, nullptr, nullptr, nullptr};
-static int g_delay[NUM_BTN] = { 2000, 4000, 6000, 8000 };
 static XPLMMenuID hMenu = nullptr;
 
 // Callbacks we will register when we create our window
@@ -46,6 +38,14 @@ static XPLMDataRef drTcasOverride = nullptr;
 
 static std::string whoAskedForAI;
 
+// Flightloop callback, which is to do some Y-Probing
+static              XPLMProbeRef gProbeRef = NULL;
+static              XPLMDataRef drCamX = NULL, drCamY = NULL, drCamZ = NULL;        // Camera position
+static              XPLMDataRef drLon = NULL, drLat = NULL;
+XPLMFlightLoopID    gFLId = NULL;
+float               CBDoSomeYProbing(float, float, int, void*);
+XPLMProbeInfo_t     gPI;
+double              gLon = NAN, gLat = NAN;
 
 /// Callback function for menu
 void CBMenu (void* /*inMenuRef*/, void* /*inItemRef*/)
@@ -70,25 +70,6 @@ void CBMenu (void* /*inMenuRef*/, void* /*inItemRef*/)
     XPLMCheckMenuItem(hMenu, 0, bHaveControl ? xplm_Menu_Checked : xplm_Menu_Unchecked);
     
     whoAskedForAI.clear();
-}
-
-
-// Widget Callback
-int CBBtn (XPWidgetMessage      inMessage,
-           XPWidgetID           inWidget,
-           intptr_t             /*inParam1*/,
-           intptr_t             /*inParam2*/)
-{
-    if (inMessage != xpMsg_PushButtonPressed) return 0;
-    
-    for (size_t i = 0; i < NUM_BTN; i++)
-    {
-        if (inWidget == g_btn[i]) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(g_delay[i]));
-            return 1;
-        }
-    }
-    return 0;
 }
 
 
@@ -136,29 +117,29 @@ PLUGIN_API int XPluginStart(
 	XPLMSetWindowResizingLimits(g_window, 200, 200, 300, 300);
 	XPLMSetWindowTitle(g_window, "Hello TCAS");
     
-    // Add buttons to it
-    int y = 50;
-    for (size_t i = 0; i < NUM_BTN; ++i, y += 30) {
-        char desc[20];
-        snprintf(desc, sizeof(desc), "%dms", g_delay[i]);
-        
-        XPWidgetID& wid = g_btn[i];
-        wid = XPCreateWidget(10, y, 100, y-30, 1, desc, 1, nullptr, xpWidgetClass_Button);
-        if (wid) {
-            XPSetWidgetProperty(wid, xpProperty_ButtonType, xpPushButton);
-            XPAddWidgetCallback(wid, CBBtn);
-        }
-    }
-    
     // Create the menu for controlling TCAS
     drTcasOverride = XPLMFindDataRef("sim/operation/override/override_TCAS");
     int my_slot = XPLMAppendMenuItem(XPLMFindPluginsMenu(), "Hello TCAS", NULL, 0);
     hMenu = XPLMCreateMenu("Hello TCAS", XPLMFindPluginsMenu(), my_slot, CBMenu, NULL);
     XPLMAppendMenuItem(hMenu, "Toggle TCAS Control",      (void*)1, 0);
 
+    // --- Install a flight loop callback that later on calls XPLMCreateProbe ---
+    XPLMCreateFlightLoop_t cfl = {
+        sizeof(XPLMCreateFlightLoop_t), xplm_FlightLoop_Phase_BeforeFlightModel,
+        CBDoSomeYProbing, NULL
+    };
+    gFLId = XPLMCreateFlightLoop(&cfl);         // create callback
+    XPLMScheduleFlightLoop(gFLId, 1.0f, 0);     // once per second
+    
+    drCamX = XPLMFindDataRef("sim/graphics/view/view_x");
+    drCamY = XPLMFindDataRef("sim/graphics/view/view_y");
+    drCamZ = XPLMFindDataRef("sim/graphics/view/view_z");
+    drLat  = XPLMFindDataRef("sim/flightmodel/position/latitude");
+    drLon  = XPLMFindDataRef("sim/flightmodel/position/longitude");
+
     XPLMDebugString("Hello TCAS: Started!\n");
 	
-	return g_window != NULL;
+    return g_window != NULL && gFLId != NULL && drCamX != NULL && drCamY != NULL && drCamZ != NULL;
 }
 
 PLUGIN_API void	XPluginStop(void)
@@ -166,6 +147,10 @@ PLUGIN_API void	XPluginStop(void)
 	// Since we created the window, we'll be good citizens and clean it up
 	XPLMDestroyWindow(g_window);
 	g_window = NULL;
+    XPLMDestroyFlightLoop(gFLId);
+    gFLId = NULL;
+    XPLMDestroyProbe(gProbeRef);
+    gProbeRef = NULL;
     XPLMDebugString("Hello TCAS: Stopped!\n");
 }
 
@@ -178,11 +163,6 @@ PLUGIN_API void XPluginDisable(void)
 PLUGIN_API int  XPluginEnable(void)
 {
     XPLMDebugString("Hello TCAS: Enabled\n");
-    
-    // Let's try to get TCAS control
-    if (!bHaveControl)
-        CBMenu(nullptr, nullptr);
-    
     return 1;
 }
 
@@ -225,14 +205,74 @@ void	draw_hello_world(XPLMWindowID in_window_id, void * /*in_refcon*/)
     l += 10;
     t -= 20;
     
-    for (int i = 0; i < 5; i++) {
-        XPLMDrawString(col_white, l, t, (char*)"Hello World!", NULL, xplmFont_Proportional);
-        t -= 20;
-    }
+    XPLMDrawString(col_white, l, t, (char*)"Hello World!", NULL, xplmFont_Proportional);
+    t -= 20;
     
+    // --- Output result of last probe ---
+    char sz[1000];
+    snprintf(sz, sizeof(sz), "Probe hit terrain at %.1f / %.1f / %.1f, %s\n",
+             gPI.locationX, gPI.locationY, gPI.locationZ,
+             gPI.is_wet ? "wet" : "dry");
+    XPLMDrawString(col_white, l, t, sz, NULL, xplmFont_Proportional);
+    t -= 20;
+
     XPLMDrawString(col_white, l, t, (char*)(bHaveControl ? "HAVE TCAS control" : "DO NOT have TCAS control"), NULL, xplmFont_Proportional);
     t -= 20;
     if (!whoAskedForAI.empty())
         XPLMDrawString(col_white, l, t, (char*)whoAskedForAI.c_str(), NULL, xplmFont_Proportional);
     
+}
+
+// Flightloop callback that is to do some Y Probing to try generating a CTD
+float CBDoSomeYProbing(float, float, int, void*)
+{
+    char sz[1000];
+    
+    // Where are we?
+    const double lat = XPLMGetDatad(drLat), lon = XPLMGetDatad(drLon);
+    // is that "far" away from last time? -> create new probe
+    if (isnan(gLat) || isnan(gLon) || fabs(lat - gLat) > 5.0 || fabs(lon - gLon) > 5.0)
+    {
+        gLat = lat;
+        gLon = lon;
+        if (gProbeRef) XPLMDestroyProbe(gProbeRef);
+        gProbeRef = NULL;
+    }
+    
+    if (!gProbeRef) {
+        snprintf(sz, sizeof(sz), "Hello TCAS: About to create a probe at position lat = %.3f / lon = %.3f\n", lat, lon);
+        XPLMDebugString(sz);
+        gProbeRef = XPLMCreateProbe(xplm_ProbeY);
+//        XPLMDebugString("Hello TCAS: Done creating a probe.\n");
+    }
+    
+    if (!gProbeRef) {
+        XPLMDebugString("Hello TCAS: But probe return value is NULL!\n");
+    }
+    else {
+        gPI = { sizeof(XPLMProbeInfo_t), 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0 };
+//        XPLMDebugString("Hello TCAS: About to let the probe drop...\n");
+        XPLMProbeResult res = XPLMProbeTerrainXYZ(gProbeRef,
+                                                  XPLMGetDataf(drCamX), XPLMGetDataf(drCamY), XPLMGetDataf(drCamZ),
+                                                  &gPI
+                                                  );
+        switch (res) {
+            case xplm_ProbeHitTerrain:
+/*                snprintf(sz, sizeof(sz), "Hello TCAS: Probe hit terrain at %.1f / %.1f / %.1f, %s\n",
+                         gPI.locationX, gPI.locationY, gPI.locationZ,
+                         gPI.is_wet ? "wet" : "dry");
+                XPLMDebugString(sz);*/
+                break;
+                
+            case xplm_ProbeMissed:
+                XPLMDebugString("Hello TCAS: Probe missed...maybe off the disc of earth?\n");
+                break;
+                
+            default:
+                XPLMDebugString("Hello TCAS: Probe ran into error!\n");
+        }
+    }
+    
+    // call me again in a second
+    return 1.0f;
 }
