@@ -15,7 +15,9 @@ jobs:
   #####################################
   # Linux with GCC
   build-lin:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+    env:
+      platform: lin
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4       # must checkout before we can use our own actions
@@ -37,7 +39,9 @@ jobs:
   #####################################
   # MacOS with CMake/clang and sign/notarize in self-written script
   build-mac:
-    runs-on: macos-latest
+    runs-on: macos-14
+    env:
+      platform: mac
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4       # must checkout before we can use our own actions
@@ -55,9 +59,9 @@ jobs:
       shell: bash
       run: |
         if [ "$MACOS_CERTIFICATE" == "" ]; then
-          echo ::set-output name=secretspresent::
+          echo "secretspresent=" >> $GITHUB_OUTPUT
         else
-          echo ::set-output name=secretspresent::true
+          echo "secretspresent=true" >> $GITHUB_OUTPUT
         fi
     - name: Codesign and Notarization
       if: ${{ steps.checksecrets.outputs.secretspresent }}
@@ -74,13 +78,15 @@ jobs:
       with:
         pluginName:   ${{ env.PRJ_NAME }}
         archFolder:   mac_x64
-        xplFileName:  ${{ steps.build.outputs.xpl-file-name }}
+        xplFileName:  "${{ steps.build.outputs.xpl-file-name }}"
         pdbFileName:  "${{ steps.build.outputs.pdb-file-name }}"
 
   #####################################
   # Windows with MS Visual Studio
   build-win:
     runs-on: windows-2022
+    env:
+      platform: win
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4       # must checkout before we can use our own actions
