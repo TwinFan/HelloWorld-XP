@@ -18,7 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v2       # must checkout before we can use our own actions
+      uses: actions/checkout@v4       # must checkout before we can use our own actions
+      with:
+        submodules: 'recursive'
     - name: Build
       uses: ./.github/actions/build-lin
       id: build
@@ -30,6 +32,7 @@ jobs:
         pluginName:   ${{ env.PRJ_NAME }}
         archFolder:   lin_x64
         xplFileName:  "${{ steps.build.outputs.xpl-file-name }}"
+        pdbFileName:  "${{ steps.build.outputs.pdb-file-name }}"
 
   #####################################
   # MacOS with CMake/clang and sign/notarize in self-written script
@@ -37,7 +40,9 @@ jobs:
     runs-on: macos-latest
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v2       # must checkout before we can use our own actions
+      uses: actions/checkout@v4       # must checkout before we can use our own actions
+      with:
+        submodules: 'recursive'
     - name: Build
       uses: ./.github/actions/build-mac
       id: build
@@ -70,6 +75,7 @@ jobs:
         pluginName:   ${{ env.PRJ_NAME }}
         archFolder:   mac_x64
         xplFileName:  ${{ steps.build.outputs.xpl-file-name }}
+        pdbFileName:  "${{ steps.build.outputs.pdb-file-name }}"
 
   #####################################
   # Windows with MS Visual Studio
@@ -77,7 +83,9 @@ jobs:
     runs-on: windows-2022
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v2       # must checkout before we can use our own actions
+      uses: actions/checkout@v4       # must checkout before we can use our own actions
+      with:
+        submodules: 'recursive'
     - name: Build
       uses: ./.github/actions/build-win
       id: build
